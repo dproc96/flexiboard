@@ -1,24 +1,40 @@
 import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import { createGlobalStyle, ThemeProvider } from 'styled-components';
+import Header from './components/Header';
+import MouseTracker from './components/MouseTracker';
+import CardContainer from './components/CardContainer';
+
+const theme = {
+  primary: "#62d1c2",
+  white: "#F2F2F2",
+  grey: "#DDDDDD",
+  black: "#222222"
+}
+
+const GlobalStyle = createGlobalStyle`
+  body {
+    background-color: ${theme.grey};
+    color: ${theme.black};
+    -webkit-touch-callout: none;
+    -webkit-user-select: none; 
+    -khtml-user-select: none; 
+    -moz-user-select: none; 
+    -ms-user-select: none; 
+    user-select: none; 
+  }
+`
 
 function App() {
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div>
+      <GlobalStyle />
+      <ThemeProvider theme={theme}>
+        <MouseTracker>
+          <Header />
+          <CardContainer />
+        </MouseTracker>
+      </ThemeProvider>
+
     </div>
   );
 }
