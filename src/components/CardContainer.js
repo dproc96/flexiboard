@@ -49,24 +49,18 @@ class CardContainer extends Component {
         super(props);
         this.state = {
             active: null,
-            hovered: null,
+            editing: false,
             cards: [
                 {
                     top: 200,
                     left: 200,
                     width: 320,
                     height: 180,
-                    title: "Motto",
-                    body: "Parum claris lucem dare",
+                    title: "Welcome to Flexiboard",
+                    body: "Double click anywhere to create a new card\n\nDouble click text to edit a card\n\nClick and drag to move and resize cards\n\nEnjoy!",
+                    editing: false,
+                    initial: null
                 },
-                {
-                    top: 200,
-                    left: 200,
-                    width: 320,
-                    height: 180,
-                    title: "Motto 2",
-                    body: "Parum claris lucem dare",
-                }
             ]
         }
     }
@@ -74,40 +68,87 @@ class CardContainer extends Component {
     cardHandleDown = (e, index) => {
         let cards = [...this.state.cards]
         const card = {...cards[index]}
-        const temp = cards.splice(index, 1)
-        cards = cards.concat(temp)
-        this.setState({ 
-            cards: cards,
-            active: {
-                index: cards.length - 1,
-                initial: {...card},
-                x: e.pageX,
-                y: e.pageY,
-                action: determineHover(card, {x: e.pageX, y: e.pageY})
-        }})
+        if (!card.editing) {
+            const temp = cards.splice(index, 1)
+            cards = cards.concat(temp)
+            this.setState({ 
+                cards: cards,
+                active: {
+                    index: cards.length - 1,
+                    initial: {...card},
+                    x: e.pageX,
+                    y: e.pageY,
+                    action: determineHover(card, {x: e.pageX, y: e.pageY})
+            }})
+        }
     }
     handleDoubleClick = e => {
-        if (e.target.tagName === "H3" || e.target.tagName === "P") {
-            
-        }
-        else {
-            const card = {
-                top: e.pageY - 105,
-                left: e.pageX - 175,
-                width: 320,
-                height: 180,
-                title: "Untitled Note",
-                body: "Enter text body here...",
+        if (!this.state.editing) {
+            if (e.target.tagName === "H3" || e.target.tagName === "P") {
+                const cards = [...this.state.cards]
+                cards[cards.length - 1].initial = { ...cards[cards.length - 1]}
+                cards[cards.length - 1].editing = true
+                this.setState({ 
+                    cards: cards,
+                    editing: true 
+                })
             }
-            const cards = [...this.state.cards]
-            cards.push(card)
-            this.setState({cards: cards})
+            else {
+                const card = {
+                    top: Math.max(e.pageY - 105, 100),
+                    left: Math.max(e.pageX - 175, 20),
+                    width: 320,
+                    height: 180,
+                    title: "Untitled Note",
+                    body: "Enter text body here...",
+                    editing: true,
+                    initial: null
+                }
+                const cards = [...this.state.cards]
+                cards.push(card)
+                this.setState({
+                    cards: cards,
+                    editing: true
+                })
+            }
         }
+    }
+    handleCardChange = (e, index) => {
+        const { name, value } = e.target;
+        const cards = [...this.state.cards]
+        cards[index][name] = value;
+        this.setState({ cards: cards })
     }
     handleDeleteCard = (e, index) => {
         const cards = [...this.state.cards]
         cards.splice(index, 1)
-        this.setState({ cards: cards })
+        this.setState({ 
+            cards: cards,
+            editing: false
+        })
+    }
+    handleConfirmChange = (e, index) => {
+        const cards = [...this.state.cards]
+        cards[index].initial = {...cards[index]}
+        cards[index].editing = false
+        this.setState({ 
+            cards: cards,
+            editing: false
+        })
+    }
+    handleDiscardChange = (e, index) => {
+        const cards = [...this.state.cards]
+        if (cards[index].initial) {
+            cards[index] = {...cards[index].initial}
+            cards[index].editing = false
+        }
+        else {
+            cards.splice(index, 1)
+        }
+        this.setState({
+            cards: cards,
+            editing: false
+        })
     }
     cardHandleUp = e => {
         this.setState({ active: null })
@@ -128,7 +169,9 @@ class CardContainer extends Component {
             const deltaHeight = (e.pageY - this.state.active.y)
             if (action[1]) {
                 card.height -= deltaHeight
-                card.top += (deltaHeight)
+                if (card.height >= 100) {
+                    card.top += (deltaHeight)
+                }
             }
             if (action[2]) {
                 card.width += deltaWidth
@@ -138,8 +181,12 @@ class CardContainer extends Component {
             }
             if (action[4]) {
                 card.width -= deltaWidth
-                card.left += (deltaWidth)
+                if (card.width >= 100) {
+                    card.left += (deltaWidth)
+                }
             }
+            card.width = Math.max(card.width, 100)
+            card.height = Math.max(card.height, 100)
             const cards = [...this.state.cards];
             cards[this.state.active.index] = card;
             this.setState({ cards: cards })
@@ -151,7 +198,7 @@ class CardContainer extends Component {
                 {value => (
                     <StyledContainer onDoubleClick={this.handleDoubleClick} onMouseLeave={this.cardHandleUp} onMouseMove={this.cardHandleMove} onMouseUp={this.cardHandleUp}>
                         {this.state.cards.map((card, index) => (
-                            <Card deleteHandler={e => {this.handleDeleteCard(e, index)}} hover={determineHover(card, value)[0]} onMouseDown={e => { this.cardHandleDown(e, index) }} onMouseUp={this.cardHandleUp} {...card} key={"card-" + index} />
+                            <Card cardHandleChange={e => {this.handleCardChange(e, index)}} confirmHandler={e => {this.handleConfirmChange(e, index)}} discardHandler={e => {this.handleDiscardChange(e, index)}} deleteHandler={e => {this.handleDeleteCard(e, index)}} hover={determineHover(card, value)[0]} onMouseDown={e => { this.cardHandleDown(e, index) }} onMouseUp={this.cardHandleUp} {...card} key={"card-" + index} />
                         ))}
                     </StyledContainer>
                 )}
