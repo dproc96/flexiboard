@@ -4,6 +4,7 @@ import styled from 'styled-components';
 const StyledHeader = styled.header`
     background-color: ${props => props.theme.primary};
     padding: 15px;
+    height: 45px;
 `
 
 function Header(props) {
