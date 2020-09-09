@@ -57,7 +57,7 @@ class CardContainer extends Component {
                     width: 320,
                     height: 180,
                     title: "Welcome to Flexiboard",
-                    body: "Double click anywhere to create a new card\n\nDouble click text to edit a card\n\nClick and drag to move and resize cards\n\nEnjoy!",
+                    body: "Double click anywhere to create a new card\n\nDouble click a card's text to edit a card\n\nClick and drag to move and resize cards\n\nEnjoy!",
                     editing: false,
                     initial: null
                 },

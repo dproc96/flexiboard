@@ -91,8 +91,10 @@ function Card(props) {
                 {elements.title}
                 {elements.body}
 
-                {props.editing && <FontAwesomeIcon onClick={props.confirmHandler} className="button" icon={faCheckCircle} />}
-                {props.editing && <FontAwesomeIcon onClick={props.discardHandler} className="button" icon={faTimesCircle} />}
+                {props.editing && <div style={{display: "block"}}>
+                    <FontAwesomeIcon onClick={props.confirmHandler} className="button" icon={faCheckCircle} />
+                    <FontAwesomeIcon onClick={props.discardHandler} className="button" icon={faTimesCircle} />
+                </div>}
             </div>
         </StyledCard>
     );
