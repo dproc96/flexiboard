@@ -79,13 +79,18 @@ const StyledCard = styled.div`
 `
 
 function Card(props) {
+    const elements = {
+        title: props.editing ? <input className="input--title" name="title" value={props.title} onChange={props.cardHandleChange}></input> : <h3 title={props.title}>{props.title}</h3>,
+        body: props.editing ? <textarea className="input--body" name="body" value={props.body} onChange={props.cardHandleChange}></textarea> : <p>{props.body}</p>
+    }
     return (
         <StyledCard {...props}>
             <div>
                 <FontAwesomeIcon style={{ float: "right" }} onClick={props.deleteHandler} className="button" icon={faTimes} />
                 
-                {props.editing ? <input className="input--title" name="title" value={props.title} onChange={props.cardHandleChange}></input> : <h3 title={props.title}>{props.title}</h3>}
-                {props.editing ? <textarea className="input--body" name="body" value={props.body} onChange={props.cardHandleChange}></textarea> : <p>{props.body}</p>}
+                {elements.title}
+                {elements.body}
+
                 {props.editing && <FontAwesomeIcon onClick={props.confirmHandler} className="button" icon={faCheckCircle} />}
                 {props.editing && <FontAwesomeIcon onClick={props.discardHandler} className="button" icon={faTimesCircle} />}
             </div>

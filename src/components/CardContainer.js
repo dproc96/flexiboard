@@ -192,13 +192,30 @@ class CardContainer extends Component {
             this.setState({ cards: cards })
         }
     }
+    getCardProps = (index, card, value) => {
+        return {
+            cardHandleChange: e => { this.handleCardChange(e, index) },
+            confirmHandler: e => { this.handleConfirmChange(e, index) },
+            discardHandler: e => { this.handleDiscardChange(e, index) },
+            deleteHandler: e => { this.handleDeleteCard(e, index) },
+            hover: determineHover(card, value)[0],
+            onMouseDown: e => { this.cardHandleDown(e, index) }, 
+            onMouseUp: this.cardHandleUp
+        }
+    }
     render() {
+        const containerProps = {
+            onDoubleClick: this.handleDoubleClick, 
+            onMouseLeave: this.cardHandleUp, 
+            onMouseMove: this.cardHandleMove,
+            onMouseUp: this.cardHandleUp
+        }
         return (
             <MouseContext.Consumer>
                 {value => (
-                    <StyledContainer onDoubleClick={this.handleDoubleClick} onMouseLeave={this.cardHandleUp} onMouseMove={this.cardHandleMove} onMouseUp={this.cardHandleUp}>
+                    <StyledContainer {...containerProps}>
                         {this.state.cards.map((card, index) => (
-                            <Card cardHandleChange={e => {this.handleCardChange(e, index)}} confirmHandler={e => {this.handleConfirmChange(e, index)}} discardHandler={e => {this.handleDiscardChange(e, index)}} deleteHandler={e => {this.handleDeleteCard(e, index)}} hover={determineHover(card, value)[0]} onMouseDown={e => { this.cardHandleDown(e, index) }} onMouseUp={this.cardHandleUp} {...card} key={"card-" + index} />
+                            <Card {...this.getCardProps(index, card, value)} {...card} key={"card-" + index} />
                         ))}
                     </StyledContainer>
                 )}
