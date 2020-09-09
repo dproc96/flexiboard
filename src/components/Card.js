@@ -2,43 +2,6 @@ import React from 'react';
 import styled from 'styled-components';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faTimes } from "@fortawesome/free-solid-svg-icons"
-import { MouseContext } from './MouseTracker';
-
-const determineHover = props => {
-    const x = props.context.x;
-    const y = props.context.y;
-    const top = props.top;
-    const left = props.left;
-    const width = props.width;
-    const height = props.height;
-    const buffer = 10
-    const topEdge = top < y && y < top + buffer;
-    const bottomEdge = (top + height + 30 - buffer) < y && y < (top + height + 30);
-    const leftEdge = left < x && x < (left + buffer);
-    const rightEdge = (left + width + 30 - buffer) < x && x < (left + width + 30);
-    if (topEdge) {
-        if (leftEdge) {
-            return "nwse-resize"
-        }
-        if (rightEdge) {
-            return "nesw-resize"
-        }
-        return "ns-resize"
-    }
-    if (bottomEdge) {
-        if (rightEdge) {
-            return "nwse-resize"
-        }
-        if (leftEdge) {
-            return "nesw-resize"
-        }
-        return "ns-resize"
-    }
-    if (leftEdge || rightEdge) {
-        return "ew-resize"
-    }
-    return "move"
-}
 
 const StyledCard = styled.div`
     background-color: ${props => props.theme.white};
@@ -90,23 +53,19 @@ const StyledCard = styled.div`
     }
 
     :hover {
-        cursor: ${props => determineHover(props)};
+        cursor: ${props => props.hover};
     }
 `
 
 function Card(props) {
     return (
-        <MouseContext.Consumer>
-            {value => (
-                <StyledCard context={{...value}} {...props}>
-                    <div>
-                        <FontAwesomeIcon className="close" icon={faTimes} />
-                        <h3 title={props.title}>{props.title}</h3>
-                        <p>{props.body}</p>
-                    </div>
-                </StyledCard>
-            )}
-        </MouseContext.Consumer>
+        <StyledCard {...props}>
+            <div>
+                <FontAwesomeIcon className="close" icon={faTimes} />
+                <h3 title={props.title}>{props.title}</h3>
+                <p>{props.body}</p>
+            </div>
+        </StyledCard>
     );
 }
 
