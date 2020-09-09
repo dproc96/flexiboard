@@ -22,26 +22,26 @@ const determineHover = (props, context) => {
     const rightEdge = (left + width + 30 - buffer) < x && x < (left + width + 30);
     if (topEdge) {
         if (leftEdge) {
-            return "nwse-resize"
+            return ["nwse-resize", true, false, false, true]
         }
         if (rightEdge) {
-            return "nesw-resize"
+            return ["nesw-resize", true, true, false, false]
         }
-        return "ns-resize"
+        return ["ns-resize", true, false, false, false]
     }
     if (bottomEdge) {
         if (rightEdge) {
-            return "nwse-resize"
+            return ["nwse-resize", false, true, true, false]
         }
         if (leftEdge) {
-            return "nesw-resize"
+            return ["nesw-resize", false, false, true, true]
         }
-        return "ns-resize"
+        return ["ns-resize", false, false, true, false]
     }
     if (leftEdge || rightEdge) {
-        return "ew-resize"
+        return ["ew-resize", false, rightEdge, false, leftEdge]
     }
-    return "move"
+    return ["move"]
 }
 
 class CardContainer extends Component {
@@ -86,11 +86,34 @@ class CardContainer extends Component {
                 action: determineHover(card, {x: e.pageX, y: e.pageY})
         }})
     }
+    handleDoubleClick = e => {
+        if (e.target.tagName === "H3" || e.target.tagName === "P") {
+            
+        }
+        else {
+            const card = {
+                top: e.pageY - 105,
+                left: e.pageX - 175,
+                width: 320,
+                height: 180,
+                title: "Untitled Note",
+                body: "Enter text body here...",
+            }
+            const cards = [...this.state.cards]
+            cards.push(card)
+            this.setState({cards: cards})
+        }
+    }
+    handleDeleteCard = (e, index) => {
+        const cards = [...this.state.cards]
+        cards.splice(index, 1)
+        this.setState({ cards: cards })
+    }
     cardHandleUp = e => {
         this.setState({ active: null })
     }
     cardHandleMove = e => {
-        if (this.state.active && this.state.active.action === "move") {
+        if (this.state.active && this.state.active.action[0] === "move") {
             const card = {...this.state.active.initial};
             card.top += (e.pageY - this.state.active.y)
             card.left += (e.pageX - this.state.active.x)
@@ -98,14 +121,37 @@ class CardContainer extends Component {
             cards[this.state.active.index] = card;
             this.setState({cards: cards})
         }
+        else if (this.state.active && this.state.active.action[0].match(/resize/g)) {
+            const card = {...this.state.active.initial}
+            const action = this.state.active.action
+            const deltaWidth = (e.pageX - this.state.active.x)
+            const deltaHeight = (e.pageY - this.state.active.y)
+            if (action[1]) {
+                card.height -= deltaHeight
+                card.top += (deltaHeight)
+            }
+            if (action[2]) {
+                card.width += deltaWidth
+            }
+            if (action[3]) {
+                card.height += deltaHeight
+            }
+            if (action[4]) {
+                card.width -= deltaWidth
+                card.left += (deltaWidth)
+            }
+            const cards = [...this.state.cards];
+            cards[this.state.active.index] = card;
+            this.setState({ cards: cards })
+        }
     }
     render() {
         return (
             <MouseContext.Consumer>
                 {value => (
-                    <StyledContainer onMouseLeave={this.cardHandleUp} onMouseMove={this.cardHandleMove}>
+                    <StyledContainer onDoubleClick={this.handleDoubleClick} onMouseLeave={this.cardHandleUp} onMouseMove={this.cardHandleMove} onMouseUp={this.cardHandleUp}>
                         {this.state.cards.map((card, index) => (
-                            <Card hover={determineHover(card, value)} onMouseDown={e => { this.cardHandleDown(e, index) }} onMouseUp={this.cardHandleUp} {...card} key={"card-" + index} />
+                            <Card deleteHandler={e => {this.handleDeleteCard(e, index)}} hover={determineHover(card, value)[0]} onMouseDown={e => { this.cardHandleDown(e, index) }} onMouseUp={this.cardHandleUp} {...card} key={"card-" + index} />
                         ))}
                     </StyledContainer>
                 )}

@@ -5,6 +5,8 @@ const StyledHeader = styled.header`
     background-color: ${props => props.theme.primary};
     padding: 15px;
     height: 45px;
+    position: relative;
+    z-index: 10;
 `
 
 function Header(props) {

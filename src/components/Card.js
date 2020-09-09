@@ -61,7 +61,7 @@ function Card(props) {
     return (
         <StyledCard {...props}>
             <div>
-                <FontAwesomeIcon className="close" icon={faTimes} />
+                <FontAwesomeIcon onClick={props.deleteHandler} className="close" icon={faTimes} />
                 <h3 title={props.title}>{props.title}</h3>
                 <p>{props.body}</p>
             </div>
