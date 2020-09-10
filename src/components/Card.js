@@ -67,10 +67,11 @@ const StyledCard = styled.div`
         font-weight: 700;
         font-size: 24px;
         margin-bottom: 15px;
+        max-width: 85%;
     }
 
     .input--body {
-        width: 90%;
+        width: 95%;
         height: ${props => (props.height - 100)+"px"};
         margin-bottom: 10px;
         overflow: scroll;
