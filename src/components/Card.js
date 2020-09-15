@@ -33,7 +33,7 @@ const StyledCard = styled.div`
     p {
         overflow: scroll;
         hyphens: auto;
-        max-height: 70%;
+        height: ${props => props.height - 60 + "px"};
         width: fit-content;
         max-width: 90%;
         white-space: pre-wrap;
