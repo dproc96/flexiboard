@@ -54,8 +54,8 @@ class CardContainer extends Component {
                 {
                     top: 200,
                     left: 200,
-                    width: 320,
-                    height: 180,
+                    width: 350,
+                    height: 210,
                     title: "Welcome to Flexiboard",
                     body: "Double click anywhere to create a new card\n\nDouble click a card's text to edit a card\n\nClick and drag to move and resize cards\n\nEnjoy!",
                     editing: false,
@@ -97,8 +97,8 @@ class CardContainer extends Component {
                 const card = {
                     top: Math.max(e.pageY - 105, 100),
                     left: Math.max(e.pageX - 175, 20),
-                    width: 320,
-                    height: 180,
+                    width: 350,
+                    height: 210,
                     title: "Untitled Note",
                     body: "Enter text body here...",
                     editing: true,

@@ -34,9 +34,9 @@ const StyledCard = styled.div`
         overflow: scroll;
         hyphens: auto;
         height: ${props => props.height - 60 + "px"};
-        width: fit-content;
-        max-width: 90%;
+        width: 100%;
         white-space: pre-wrap;
+        overflow-x: hidden;
     }
 
     h3:hover, p:hover {
