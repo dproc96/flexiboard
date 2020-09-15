@@ -61,6 +61,7 @@ const StyledCard = styled.div`
         border: none;
         border-radius: 10px;
         padding: 5px;
+        overflow-x: none;
     }
 
     .input--title {
