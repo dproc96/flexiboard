@@ -1,5 +1,7 @@
-import React from 'react';
+import React, {useEffect} from 'react';
 import { createGlobalStyle, ThemeProvider } from 'styled-components';
+import { BrowserRouter as Router, Route, Switch, Redirect } from 'react-router-dom';
+import socketIOClient from "socket.io-client";
 import Header from './components/Header';
 import MouseTracker from './components/MouseTracker';
 import CardContainer from './components/CardContainer';
@@ -33,14 +35,40 @@ const GlobalStyle = createGlobalStyle`
   }
 `
 
+const ENDPOINT = "192.168.0.19:3001";
+
+function makeid(length) {
+  var result = '';
+  var characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+  var charactersLength = characters.length;
+  for (var i = 0; i < length; i++) {
+    result += characters.charAt(Math.floor(Math.random() * charactersLength));
+  }
+  return result;
+}
+
 function App() {
+  const newBoardId = makeid(20)
+  useEffect(() => {
+    const socket = socketIOClient(ENDPOINT);
+    socket.emit("new board", newBoardId)
+  }, []);
   return (
     <div>
       <GlobalStyle />
       <ThemeProvider theme={theme}>
         <MouseTracker>
-          <Header />
-          <CardContainer />
+          <Router>
+            <Switch>
+              <Route exact path="/">
+                <Redirect to={`/${newBoardId}`} />
+              </Route>
+              <Route path={`/${newBoardId}`}>
+                <Header />
+                <CardContainer />
+              </Route>
+            </Switch>
+          </Router>
         </MouseTracker>
       </ThemeProvider>
 
