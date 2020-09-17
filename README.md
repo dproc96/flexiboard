@@ -1,5 +1,5 @@
 # Flexiboard
-![Screenshot](public/assets/images/Screen Shot 2020-09-17 at 10.13.06 AM.png)
+![Screenshot](/public/assets/images/Screen Shot 2020-09-17 at 10.13.06 AM.png)
 
 ## What is Flexiboard?
 
