@@ -4,7 +4,7 @@ import socketIOClient from "socket.io-client";
 import Header from './Header';
 import CardContainer from './CardContainer';
 
-const ENDPOINT = "192.168.0.19:3001";
+const ENDPOINT = "/";
 
 function makeid(length) {
     var result = '';
