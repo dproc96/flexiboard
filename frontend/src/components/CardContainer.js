@@ -64,14 +64,19 @@ class CardContainer extends Component {
             ]
         }
     }
-
+    handleStateChange = state => {
+        if (state.hasOwnProperty("cards")) {
+            this.props.socket.current.emit("update", this.props.boardId, state.cards)
+        }
+        this.setState(state)
+    }
     cardHandleDown = (e, index) => {
         let cards = [...this.state.cards]
         const card = {...cards[index]}
         if (!card.editing) {
             const temp = cards.splice(index, 1)
             cards = cards.concat(temp)
-            this.setState({ 
+            this.handleStateChange({ 
                 cards: cards,
                 active: {
                     index: cards.length - 1,
@@ -88,7 +93,7 @@ class CardContainer extends Component {
                 const cards = [...this.state.cards]
                 cards[cards.length - 1].initial = { ...cards[cards.length - 1]}
                 cards[cards.length - 1].editing = true
-                this.setState({ 
+                this.handleStateChange({ 
                     cards: cards,
                     editing: true 
                 })
@@ -106,7 +111,7 @@ class CardContainer extends Component {
                 }
                 const cards = [...this.state.cards]
                 cards.push(card)
-                this.setState({
+                this.handleStateChange({
                     cards: cards,
                     editing: true
                 })
@@ -117,12 +122,12 @@ class CardContainer extends Component {
         const { name, value } = e.target;
         const cards = [...this.state.cards]
         cards[index][name] = value;
-        this.setState({ cards: cards })
+        this.handleStateChange({ cards: cards })
     }
     handleDeleteCard = (e, index) => {
         const cards = [...this.state.cards]
         cards.splice(index, 1)
-        this.setState({ 
+        this.handleStateChange({ 
             cards: cards,
             editing: false
         })
@@ -131,7 +136,7 @@ class CardContainer extends Component {
         const cards = [...this.state.cards]
         cards[index].initial = {...cards[index]}
         cards[index].editing = false
-        this.setState({ 
+        this.handleStateChange({ 
             cards: cards,
             editing: false
         })
@@ -145,13 +150,13 @@ class CardContainer extends Component {
         else {
             cards.splice(index, 1)
         }
-        this.setState({
+        this.handleStateChange({
             cards: cards,
             editing: false
         })
     }
     cardHandleUp = e => {
-        this.setState({ active: null })
+        this.handleStateChange({ active: null })
     }
     cardHandleMove = e => {
         if (this.state.active && this.state.active.action[0] === "move") {
@@ -160,7 +165,7 @@ class CardContainer extends Component {
             card.left += (e.pageX - this.state.active.x)
             const cards = [...this.state.cards];
             cards[this.state.active.index] = card;
-            this.setState({cards: cards})
+            this.handleStateChange({cards: cards})
         }
         else if (this.state.active && this.state.active.action[0].match(/resize/g)) {
             const card = {...this.state.active.initial}
@@ -189,7 +194,7 @@ class CardContainer extends Component {
             card.height = Math.max(card.height, 100)
             const cards = [...this.state.cards];
             cards[this.state.active.index] = card;
-            this.setState({ cards: cards })
+            this.handleStateChange({ cards: cards })
         }
     }
     getCardProps = (index, card, value) => {
@@ -202,6 +207,18 @@ class CardContainer extends Component {
             onMouseDown: e => { this.cardHandleDown(e, index) }, 
             onMouseUp: this.cardHandleUp
         }
+    }
+    componentDidMount() {
+        setTimeout(() => {
+            if (this.props.socket.current) {
+                this.props.socket.current.on("update", cards => {
+                    this.setState({ cards: cards })
+                })
+                this.props.socket.current.on("new user", () => {
+                    this.props.socket.current.emit("update", this.props.boardId, this.state.cards)
+                })
+            }
+        }, 10)
     }
     render() {
         const containerProps = {
