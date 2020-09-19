@@ -16,7 +16,7 @@ module.exports = app => {
     for (let route of routes) {
         route(app)
     }
-    app.get("/test", (req, res) => {
-        res.send({ test: "Success" })
+    app.get("/", (req, res) => {
+        res.sendFile(path.join(__dirname, "..", "client", "build", "index.html"))
     })
 }
