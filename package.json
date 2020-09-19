@@ -4,9 +4,9 @@
   "description": "",
   "main": "server.js",
   "scripts": {
-    "start": "if-env NODE_ENV=production && npm run start:prod || npm run start:dev",
-    "start:prod": "node server.js",
-    "start:dev": "concurrently \"nodemon --ignore 'client/*'\" \"npm run client\"",
+    "start": "per-env",
+    "start:production": "node server.js",
+    "start:development": "concurrently \"nodemon --ignore 'client/*'\" \"npm run client\"",
     "client": "cd client && npm run start",
     "install": "cd client && npm install",
     "build": "cd client && npm run build",
@@ -28,6 +28,7 @@
     "if-env": "^1.0.4",
     "mongodb": "^3.6.2",
     "mysql2": "^2.1.0",
+    "per-env": "^1.0.2",
     "sequelize": "^6.3.5",
     "socket.io": "^2.3.0"
   },
