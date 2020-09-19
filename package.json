@@ -28,6 +28,7 @@
     "mongodb": "^3.6.2",
     "mysql2": "^2.1.0",
     "sequelize": "^6.3.5",
+    "if-env": "^1.0.4",
     "socket.io": "^2.3.0"
   },
   "devDependencies": {
