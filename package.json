@@ -14,14 +14,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/dproc96/flexiboard-server.git"
+    "url": "git+https://github.com/dproc96/flexiboard.git"
   },
   "author": "Dan Proctor",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/dproc96/flexiboard-server/issues"
+    "url": "https://github.com/dproc96/flexiboard/issues"
   },
-  "homepage": "https://github.com/dproc96/flexiboard-server#readme",
+  "homepage": "https://github.com/dproc96/flexiboard#readme",
   "dependencies": {
     "dotenv": "^8.2.0",
     "express": "^4.17.1",
