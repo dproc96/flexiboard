@@ -2,8 +2,10 @@ const express = require("express");
 const http = require("http");
 const PORT = process.env.PORT || 3001;
 const router = require("./routes");
+const mongoose = require("mongoose");
+const uri = process.env.MONGODB_URI;
 
-const app = express();
+mongoose.connect(uri, {useNewUrlParser: true})
 
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());

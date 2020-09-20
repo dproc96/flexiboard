@@ -23,13 +23,13 @@
   },
   "homepage": "https://github.com/dproc96/flexiboard#readme",
   "dependencies": {
+    "bcryptjs": "^2.4.3",
     "dotenv": "^8.2.0",
     "express": "^4.17.1",
-    "if-env": "^1.0.4",
+    "jsonwebtoken": "^8.5.1",
     "mongodb": "^3.6.2",
-    "mysql2": "^2.1.0",
+    "mongoose": "^5.10.6",
     "per-env": "^1.0.2",
-    "sequelize": "^6.3.5",
     "socket.io": "^2.3.0"
   },
   "devDependencies": {
