@@ -1,8 +1,9 @@
 const mongoose = require("mongoose");
+const Schema = mongoose.Schema;
 const jwt = require("jsonwebtoken")
 const bcrypt = require("bcryptjs")
 
-const UserSchema = new mongoose.Schema({
+const UserSchema = new Schema({
     email: {
         type: String,
         required: true,
@@ -17,7 +18,7 @@ const UserSchema = new mongoose.Schema({
         required: true
     },
     boards: [{
-        type: mongoose.Schema.Types.ObjectId,
+        type: Schema.Types.ObjectId,
         ref: "Board"
     }],
     tokens: [{
@@ -27,7 +28,7 @@ const UserSchema = new mongoose.Schema({
         }
     }],
     cards: [{
-        type: mongoose.Schema.Types.ObjectId,
+        type: Schema.Types.ObjectId,
         ref: "Card"
     }]
 })
@@ -40,7 +41,7 @@ UserSchema.methods.generateAuthToken = async () => {
     return token;
 }
 
-UserSchema.methods.findByCredentials = async (email, password) => {
+UserSchema.statics.findByCredentials = async (email, password) => {
     User.findOne({email}).then(user => {
         const isMatch = bcrypt.compareSync(password, user.password)
 
@@ -51,7 +52,7 @@ UserSchema.methods.findByCredentials = async (email, password) => {
     })
 }
 
-UserSchema.pre("save", async next => {
+UserSchema.pre("save", function(next) {
     const user = this;
     if (user.isModified("password")) {
         user.password = bcrypt.hashSync(user.password)
