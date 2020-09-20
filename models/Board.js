@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 const Card = require("./Card");
-const { cadetblue } = require('color-name');
+const User = require("./User")
 
 const BoardSchema = new Schema({
     title: {
@@ -26,7 +26,7 @@ const BoardSchema = new Schema({
 })
 
 BoardSchema.statics.fetchBoard = async id => {
-    return await Board.findById(id).populate("cards.data").then(board => {
+    return await Board.findById(id).populate("cards.data").populate("users").then(board => {
         board.cards.sort((a, b) => a.index - b.index)
         const cards = []
         // For whatever reason map function and direct editing didn't work but this did
@@ -42,10 +42,20 @@ BoardSchema.statics.fetchBoard = async id => {
             }
             cards.push(newCard)
         }
+        const users = []
+        for (let user of board.users) {
+            let newUser = {
+                email: user.email,
+                _id: user._id,
+                name: user.name
+            }
+            users.push(newUser)
+        }
         const output = {
             title: board.title,
             _id: board._id,
-            cards: cards
+            cards: cards,
+            users: users
         }
         return output
     }).catch(e => {
@@ -58,14 +68,6 @@ BoardSchema.statics.updateBoard = async (id, boardData) => {
     for (let card of boardData.cards) {
         if (card._id) {
             Card.findById(card._id).then(dbCard => {
-                if (dbCard.boards.indexOf(mongoose.Types.ObjectId(id)) === -1) {
-                    dbCard.boards.push(mongoose.Types.ObjectId(id))
-                }
-                boardData.users.forEach(user => {
-                    if (dbCard.users.indexOf(mongoose.Types.ObjectId(user._id)) === -1) {
-                        dbCard.users.push(mongoose.Types.ObjectId(user._id))
-                    }
-                })
                 dbCard.title = card.title
                 dbCard.body = card.body
                 dbCard.save()
@@ -75,22 +77,42 @@ BoardSchema.statics.updateBoard = async (id, boardData) => {
         }
         else {
             newCards.push(card)
-            card.newCardIndex = newCards.length - 1
+            card.newCardIndex = newCards.length
         }
     }
     return await Card.insertMany(newCards).then(async cards => {
         boardData.cards = boardData.cards.map((card, i) => {
-                card.data = card.newCardIndex ? cards[card.newCardIndex]._id : card._id
-                card.index = i
-                delete card.title
-                delete card.body
-                delete card._id
-                delete card.newCardIndex
-                return card
-            })
+            card.data = card.newCardIndex ? cards[card.newCardIndex - 1]._id : card._id
+            card.index = i
+            delete card.title
+            delete card.body
+            delete card._id
+            delete card.newCardIndex
+            return card
+        })
         return await Board.findById(id).then(async dbBoard => {
             dbBoard.title = boardData.title
             dbBoard.cards = boardData.cards
+            boardData.users.forEach(user => {
+                User.findById(user._id).then(user => {
+                    if (dbBoard.users.indexOf(user._id) === -1) {
+                        dbBoard.users.push(user._id)
+                        user.boards.push(dbBoard._id)
+                    }
+                    dbBoard.cards.forEach(card => {
+                        if (user.cards.indexOf(card.data) === -1) {
+                            user.cards.push(card.data)
+                            Card.findById(card.data).then(dbCard => {
+                                if (dbCard.users.indexOf(user._id) === -1) {
+                                    dbCard.users.push(user._id)
+                                    dbCard.save()
+                                }
+                            })
+                        }
+                    })
+                    user.save()
+                })
+            })
             return await dbBoard.save().then(result => result)
         }).catch(e => {
             throw new Error(e.message)
@@ -114,6 +136,21 @@ BoardSchema.statics.newBoard = async (boardData, userId) => {
             users: [mongoose.Types.ObjectId(userId)]
         }
         return await Board.create(board).then(result => {
+            User.findById(userId).then(user => {
+                user.boards.push(result._id)
+                cards.forEach(card => {
+                    if (user.cards.indexOf(card._id) === -1) {
+                        user.cards.push(card._id)
+                        Card.findById(card._id).then(dbCard => {
+                            if (dbCard.users.indexOf(user._id) === -1) {
+                                dbCard.users.push(user._id)
+                                dbCard.save()
+                            }
+                        })
+                    }
+                })
+                user.save()
+            })
             return result
         }).catch(e => {
             throw new Error(e.message)

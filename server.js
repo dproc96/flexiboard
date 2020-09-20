@@ -29,6 +29,7 @@ db.User.create({
         }]
     }, user._id).then(board => {
         db.Board.fetchBoard(board._id).then(result => {
+            console.log(result)
             result.cards.push({
                 title: "Test 2",
                 body: "This is a second test card",
@@ -36,9 +37,6 @@ db.User.create({
                 height: 300,
                 top: 100,
                 left: 100
-            })
-            db.Board.updateBoard(result._id, result).then(final => {
-                console.log(final)
             })
         })
     })

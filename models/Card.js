@@ -10,10 +10,6 @@ const CardSchema = new Schema({
         type: String,
         required: true
     },
-    boards: [{
-        type: Schema.Types.ObjectId,
-        ref: "Board"
-    }],
     users: [{
         type: Schema.Types.ObjectId,
         ref: "User"
