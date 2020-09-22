@@ -6,6 +6,8 @@ import RouteController from './components/RouteController';
 
 const theme = {
   primary: "#62d1c2",
+  primaryDark: "#36b7a6",
+  primaryDarker: "#2b9284",
   white: "#F2F2F2",
   grey: "#DDDDDD",
   black: "#222222"

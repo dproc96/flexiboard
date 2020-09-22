@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import Card from './Card';
 import { MouseContext } from './MouseTracker';
 import styled from 'styled-components';
+import LogIn from './LogIn';
 
 const StyledContainer = styled.div`
     width: 100vw;
@@ -50,24 +51,13 @@ class CardContainer extends Component {
         this.state = {
             active: null,
             editing: false,
-            cards: [
-                {
-                    top: 200,
-                    left: 200,
-                    width: 350,
-                    height: 210,
-                    title: "Welcome to Flexiboard",
-                    body: "Double click anywhere to create a new card\n\nDouble click a card's text to edit a card\n\nClick and drag to move and resize cards\n\nEnjoy!",
-                    editing: false,
-                    initial: null
-                },
-            ]
+            cards: this.props.cards || []
         }
     }
     handleStateChange = state => {
-        if (state.hasOwnProperty("cards")) {
-            this.props.socket.current.emit("update", this.props.boardId, state.cards)
-        }
+        // if (state.hasOwnProperty("cards")) {
+        //     this.props.socket.current.emit("update", this.props.boardId, state.cards)
+        // }
         this.setState(state)
     }
     cardHandleDown = (e, index) => {
@@ -88,7 +78,7 @@ class CardContainer extends Component {
         }
     }
     handleDoubleClick = e => {
-        if (!this.state.editing) {
+        if (!this.state.editing && !this.props.showLogin) {
             if (e.target.tagName === "H3" || e.target.tagName === "P") {
                 const cards = [...this.state.cards]
                 cards[cards.length - 1].initial = { ...cards[cards.length - 1]}
@@ -208,18 +198,35 @@ class CardContainer extends Component {
             onMouseUp: this.cardHandleUp
         }
     }
-    componentDidMount() {
-        setTimeout(() => {
-            if (this.props.socket.current) {
-                this.props.socket.current.on("update", cards => {
-                    this.setState({ cards: cards })
-                })
-                this.props.socket.current.on("new user", () => {
-                    this.props.socket.current.emit("update", this.props.boardId, this.state.cards)
-                })
-            }
-        }, 10)
+    componentDidUpdate(prevProps) {
+        if (!prevProps.showLogin && this.props.showLogin) {
+            let cards = this.state.cards
+            cards = cards.concat([{
+                top: 200,
+                left: 200,
+                width: 350,
+                height: 250,
+                title: "Login",
+                body: <LogIn/>,
+                editing: false,
+                initial: null,
+                isLogIn: true
+            }])
+            this.setState({cards: cards})
+        }
     }
+    // componentDidMount() {
+    //     setTimeout(() => {
+    //         if (this.props.socket.current) {
+    //             this.props.socket.current.on("update", cards => {
+    //                 this.setState({ cards: cards })
+    //             })
+    //             this.props.socket.current.on("new user", () => {
+    //                 this.props.socket.current.emit("update", this.props.boardId, this.state.cards)
+    //             })
+    //         }
+    //     }, 10)
+    // }
     render() {
         const containerProps = {
             onDoubleClick: this.handleDoubleClick, 

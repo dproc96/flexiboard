@@ -1,8 +1,9 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { Route, Redirect, useLocation } from 'react-router-dom';
 import socketIOClient from "socket.io-client";
 import Header from './Header';
 import CardContainer from './CardContainer';
+import Homepage from '../pages/Homepage';
 
 const ENDPOINT = "/";
 
@@ -17,24 +18,25 @@ function makeid(length) {
 }
 
 function RouteController() {
-    const newBoardId = "/" + makeid(20)
+    // const newBoardId = "/" + makeid(20)
     let location = useLocation()
     const path = location.pathname
-    const hasId = path !== "/"
-    const boardId = hasId ? path : newBoardId
-    let socket = useRef(null)
-    useEffect(() => {
-        socket.current = socketIOClient(ENDPOINT);
-        socket.current.emit(hasId ? "new connection" : "new board", boardId)
-    }, [boardId, hasId]);
+    const [showLogin, setShowLogin] = useState(false)
+    // const hasId = path !== "/"
+    // const boardId = hasId ? path : newBoardId
+    // let socket = useRef(null)
+    // useEffect(() => {
+    //     socket.current = socketIOClient(ENDPOINT);
+    //     socket.current.emit(hasId ? "new connection" : "new board", boardId)
+    // }, [boardId, hasId]);
     return (
         <React.Fragment>
-            <Header />
+            <Header setShowLogin={setShowLogin} path={path} />
             <Route exact path="/">
-                <Redirect to={boardId} />
+                <Homepage showLogin={showLogin} />
             </Route>
-            <Route exact path={boardId}>
-                <CardContainer boardId={boardId} socket={socket} />
+            <Route path="/board/">
+                <CardContainer />
             </Route>
         </React.Fragment>
     );
