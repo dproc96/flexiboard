@@ -33,7 +33,7 @@ function RouteController() {
         <React.Fragment>
             <Header setShowLogin={setShowLogin} path={path} />
             <Route exact path="/">
-                <Homepage showLogin={showLogin} />
+                <Homepage setShowLogin={setShowLogin} showLogin={showLogin} />
             </Route>
             <Route path="/board/">
                 <CardContainer />

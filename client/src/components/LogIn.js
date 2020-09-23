@@ -35,7 +35,7 @@ function LogIn(props) {
             password: password
         }
         if (body.email && body.email.match(/.+@.+\..+/) && body.password) {
-            axios.post(window.location.origin + "/users/login", body).then(response => {
+            axios.post(window.location.origin + "/api/v1/users/login", body).then(response => {
                 console.log(response)
                 localStorage.setItem("flexiboard-token", response.data.token)
             })
@@ -48,7 +48,7 @@ function LogIn(props) {
             name: name
         }
         if (body.email && body.email.match(/.+@.+\..+/) && body.password && body.password === passwordMatch && body.name) {
-            axios.post(window.location.origin + "/users/register", body).then(response => {
+            axios.post(window.location.origin + "/api/v1/users/register", body).then(response => {
                 console.log(response)
                 localStorage.setItem("flexiboard-token", response.data.token)
             })

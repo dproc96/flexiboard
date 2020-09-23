@@ -50,18 +50,19 @@ class CardContainer extends Component {
         super(props);
         this.state = {
             active: null,
-            editing: false,
-            cards: this.props.cards || []
+            editing: false
         }
     }
     handleStateChange = state => {
-        // if (state.hasOwnProperty("cards")) {
+        if (state.hasOwnProperty("cards")) {
+            this.props.setCards(state.cards)
+            delete state.cards
         //     this.props.socket.current.emit("update", this.props.boardId, state.cards)
-        // }
+        }
         this.setState(state)
     }
     cardHandleDown = (e, index) => {
-        let cards = [...this.state.cards]
+        let cards = [...this.props.cards]
         const card = {...cards[index]}
         if (!card.editing) {
             const temp = cards.splice(index, 1)
@@ -80,7 +81,7 @@ class CardContainer extends Component {
     handleDoubleClick = e => {
         if (!this.state.editing && !this.props.showLogin) {
             if (e.target.tagName === "H3" || e.target.tagName === "P") {
-                const cards = [...this.state.cards]
+                const cards = [...this.props.cards]
                 cards[cards.length - 1].initial = { ...cards[cards.length - 1]}
                 cards[cards.length - 1].editing = true
                 this.handleStateChange({ 
@@ -99,7 +100,7 @@ class CardContainer extends Component {
                     editing: true,
                     initial: null
                 }
-                const cards = [...this.state.cards]
+                const cards = [...this.props.cards]
                 cards.push(card)
                 this.handleStateChange({
                     cards: cards,
@@ -110,12 +111,12 @@ class CardContainer extends Component {
     }
     handleCardChange = (e, index) => {
         const { name, value } = e.target;
-        const cards = [...this.state.cards]
+        const cards = [...this.props.cards]
         cards[index][name] = value;
         this.handleStateChange({ cards: cards })
     }
     handleDeleteCard = (e, index) => {
-        const cards = [...this.state.cards]
+        const cards = [...this.props.cards]
         cards.splice(index, 1)
         this.handleStateChange({ 
             cards: cards,
@@ -123,7 +124,7 @@ class CardContainer extends Component {
         })
     }
     handleConfirmChange = (e, index) => {
-        const cards = [...this.state.cards]
+        const cards = [...this.props.cards]
         cards[index].initial = {...cards[index]}
         cards[index].editing = false
         this.handleStateChange({ 
@@ -132,7 +133,7 @@ class CardContainer extends Component {
         })
     }
     handleDiscardChange = (e, index) => {
-        const cards = [...this.state.cards]
+        const cards = [...this.props.cards]
         if (cards[index].initial) {
             cards[index] = {...cards[index].initial}
             cards[index].editing = false
@@ -153,7 +154,7 @@ class CardContainer extends Component {
             const card = {...this.state.active.initial};
             card.top += (e.pageY - this.state.active.y)
             card.left += (e.pageX - this.state.active.x)
-            const cards = [...this.state.cards];
+            const cards = [...this.props.cards];
             cards[this.state.active.index] = card;
             this.handleStateChange({cards: cards})
         }
@@ -182,7 +183,7 @@ class CardContainer extends Component {
             }
             card.width = Math.max(card.width, 100)
             card.height = Math.max(card.height, 100)
-            const cards = [...this.state.cards];
+            const cards = [...this.props.cards];
             cards[this.state.active.index] = card;
             this.handleStateChange({ cards: cards })
         }
@@ -200,19 +201,20 @@ class CardContainer extends Component {
     }
     componentDidUpdate(prevProps) {
         if (!prevProps.showLogin && this.props.showLogin) {
-            let cards = this.state.cards
+            let cards = this.props.cards
             cards = cards.concat([{
                 top: 200,
                 left: 200,
                 width: 350,
                 height: 300,
                 title: "Login",
-                body: <LogIn/>,
+                body: <LogIn />,
                 editing: false,
                 initial: null,
-                isLogIn: true
+                isLogIn: true,
+                setShowLogin: this.props.setShowLogin
             }])
-            this.setState({cards: cards})
+            this.props.setCards(cards)
         }
     }
     // componentDidMount() {
@@ -238,7 +240,7 @@ class CardContainer extends Component {
             <MouseContext.Consumer>
                 {value => (
                     <StyledContainer {...containerProps}>
-                        {this.state.cards.map((card, index) => (
+                        {this.props.cards.map((card, index) => (
                             <Card {...this.getCardProps(index, card, value)} {...card} key={"card-" + index} />
                         ))}
                     </StyledContainer>

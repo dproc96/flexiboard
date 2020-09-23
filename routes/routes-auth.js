@@ -2,7 +2,7 @@ const db = require("../models");
 const auth = require("../middleware/auth");
 
 module.exports = app => {
-    app.post("/users/register", async (req, res) => {
+    app.post("/api/v1/users/register", async (req, res) => {
         const user = new db.User(req.body)
         try {
             await user.save()
@@ -14,7 +14,7 @@ module.exports = app => {
         }
     })
 
-    app.post("/users/login", async (req, res) => {
+    app.post("/api/v1/users/login", async (req, res) => {
         db.User.findByCredentials(req.body.email, req.body.password).then(async user => {
             const token = await user.generateAuthToken()
             res.status(200).send({ user, token })
@@ -24,7 +24,7 @@ module.exports = app => {
         })
     })
 
-    app.post("/users/logout", async (req, res) => {
+    app.post("/api/v1/users/logout", async (req, res) => {
         try {
             req.user.tokens = req.user.tokens.filter(token => {
                 return token.token !== req.token
@@ -36,7 +36,7 @@ module.exports = app => {
         }
     })
 
-    app.get("/users/me", auth, async (req, res) => {
+    app.get("/api/v1/users/me", auth, async (req, res) => {
         db.User.findById(req.user).populate("boards").populate("cards").then(user => {
             res.json(user)
         }).catch(e => {
@@ -44,7 +44,7 @@ module.exports = app => {
         })
     })
 
-    app.put("/users", auth, async (req, res) => {    
+    app.put("/api/v1/users", auth, async (req, res) => {    
         for (let key in req.body) {
             if (req.user.hasOwnProperty(key)) {
                 req.user[key] = req.body[key]

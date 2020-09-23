@@ -3,7 +3,7 @@ const auth = require("../middleware/auth")
 const mongoose = require("mongoose")
 
 module.exports = app => {
-    app.get("/boards/:boardId", auth, (req, res) => {
+    app.get("/api/v1/boards/:boardId", auth, (req, res) => {
         db.Board.fetchBoard(req.params.boardId).then(board => {
             db.User.findById(req.user).then(user => {
                 const permitted = user.boards.indexOf(board._id) > -1
@@ -17,7 +17,7 @@ module.exports = app => {
         })
     })
 
-    app.post("/boards/:boardId", auth, (req, res) => {
+    app.post("/api/v1/boards/:boardId", auth, (req, res) => {
         db.Board.fetchBoard(req.params.boardId).then(board => {
             let forbidden = true
             board.users.forEach(user => {
@@ -34,7 +34,7 @@ module.exports = app => {
         }) 
     })
 
-    app.post("/boards/new", auth, (req, res) => {
+    app.post("/api/v1/boards/new", auth, (req, res) => {
         db.Board.newBoard(req.body, req.user).then(results => {
             res.status(200).send()
         }).catch(e => {
