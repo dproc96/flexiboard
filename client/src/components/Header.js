@@ -1,5 +1,6 @@
 import React from 'react';
 import styled from 'styled-components';
+import StyledButton from '../styles/StyledButton';
 
 const StyledHeader = styled.header`
     background-color: ${props => props.theme.primary};
@@ -14,29 +15,6 @@ const StyledHeader = styled.header`
         display: flex;
         justify-content: space-between;
     }
-
-    button {
-        background-color: ${props => props.theme.primaryDark};
-        border: none;
-        color: ${props => props.theme.white};
-        border-radius: 10px;
-        box-shadow: 1px 1px 1px 1px rgba(0, 0, 0, 0.1);
-        margin-left: 10px;
-        padding: 15px;
-    }
-
-    button:hover {
-        cursor: pointer;
-        background-color: ${props => props.theme.primaryDarker};
-    }
-
-    button:focus {
-        outline: none;
-    }
-    
-    button:active {
-        transform: scale(0.9, 0.9);
-    }
 `
 
 function Header(props) {
@@ -48,7 +26,7 @@ function Header(props) {
             <img width="150px" src="/assets/images/flexiboard-header-logo.png" alt="flexiboard" />
             {props.path === "/" && 
             <div>
-                <button onClick={buttonClick}>Log In</button>
+                <StyledButton onClick={buttonClick}>Log In</StyledButton>
             </div>}
         </StyledHeader>
     );

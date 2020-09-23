@@ -205,7 +205,7 @@ class CardContainer extends Component {
                 top: 200,
                 left: 200,
                 width: 350,
-                height: 250,
+                height: 300,
                 title: "Login",
                 body: <LogIn/>,
                 editing: false,

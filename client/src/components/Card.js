@@ -85,9 +85,12 @@ function Card(props) {
         title: props.editing ? <input className="input--title" name="title" value={props.title} onChange={props.cardHandleChange}></input> : <h3 title={props.title}>{props.title}</h3>,
         body: props.editing ? <textarea className="input--body" name="body" value={props.body} onChange={props.cardHandleChange}></textarea> : props.isLogIn ? props.body : <p>{props.body}</p>
     }
+    const logInDeleteHandler = () => {
+        props.deleteHandler()
+    }
     return (
         <StyledCard {...props}>
-                <FontAwesomeIcon style={{ float: "right" }} onClick={props.deleteHandler} className="button" icon={faTimes} />
+                <FontAwesomeIcon style={{ float: "right" }} onClick={props.isLogIn ? logInDeleteHandler : props.deleteHandler} className="button" icon={faTimes} />
                 
                 {elements.title}
                 {elements.body}
