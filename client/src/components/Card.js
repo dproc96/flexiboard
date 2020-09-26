@@ -84,7 +84,7 @@ const StyledCard = styled.div`
 function Card(props) {
     const elements = {
         title: props.editing ? <input className="input--title" name="title" value={props.title} onChange={props.cardHandleChange}></input> : <h3 title={props.title}>{props.title}</h3>,
-        body: props.editing ? <textarea className="input--body" name="body" value={props.body} onChange={props.cardHandleChange}></textarea> : props.isLogIn ? <LogIn setToken={props.setToken} cards={props.cards} setUser={props.setUser} /> : <p>{props.body}</p>
+        body: props.editing ? <textarea placeholder="Enter text body..." className="input--body" name="body" value={props.body} onChange={props.cardHandleChange}></textarea> : props.isLogIn ? <LogIn setToken={props.setToken} cards={props.cards} setUser={props.setUser} /> : <p>{props.body}</p>
     }
     const logInDeleteHandler = () => {
         // Set showLogIn to false

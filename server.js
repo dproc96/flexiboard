@@ -11,36 +11,6 @@ const app = express()
 
 mongoose.connect(uri, {useNewUrlParser: true})
 mongoose.connection.useDb("flexiboard")
-mongoose.connection.dropDatabase()
-db.User.create({
-    email: "test@test.com",
-    password: "testuser",
-    name: "Test User"
-}).then(user => {
-    db.Board.newBoard({
-        title: "Test Board",
-        cards: [{
-            title: "Test",
-            body: "This is a test card",
-            width: 500,
-            height: 300,
-            top: 100,
-            left: 100
-        }]
-    }, user._id).then(board => {
-        db.Board.fetchBoard(board._id).then(result => {
-            console.log(result)
-            result.cards.push({
-                title: "Test 2",
-                body: "This is a second test card",
-                width: 400,
-                height: 300,
-                top: 100,
-                left: 100
-            })
-        })
-    })
-})
 
 
 
@@ -53,20 +23,31 @@ router(app);
 
 const server = http.createServer(app)
 const io = require("socket.io")(server)
+const boards = {}
 io.on("connection", socket => {
-    socket.on("new board", board => {
-        socket.join(board)
-    })
     socket.on("new connection", board => {
+        console.log("Board: " + board)
         socket.join(board)
         socket.to(board).emit("new user")
     })
-    socket.on("update", (board, cards) => {
-        socket.to(board).emit("update", cards)
+    socket.on("update", (board, data) => {
+        boards[board] = data
+        socket.to(board).emit("update", data)
     })
 })
 
-console.log(app._router.stack)
+const interval = setInterval(() => {
+    for (let board in boards) {
+        var room = io.sockets.adapter.rooms[board]
+        if (room && room.length > 0) {
+            db.Board.updateBoard(board, boards[board])
+        }
+        else {
+            delete boards[board]
+        }
+    }
+}, 10)
+
 server.listen(PORT, () => {
     console.log(`🌎 ==> API server now on port ${PORT}!`);
 })

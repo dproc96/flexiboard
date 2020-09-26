@@ -29,7 +29,7 @@ function RouteController() {
     console.log(user)
     return (
         <User user={user}>
-            <Header setUser={setUser} setShowLogin={setShowLogin} path={path} />
+            <Header setToken={setToken} setUser={setUser} setShowLogin={setShowLogin} path={path} />
             <Route exact path="/">
                 <Homepage setToken={setToken} setUser={setUser} setShowLogin={setShowLogin} showLogin={showLogin} />
             </Route>

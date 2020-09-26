@@ -57,7 +57,6 @@ class CardContainer extends Component {
         if (state.hasOwnProperty("cards")) {
             this.props.setCards(state.cards)
             delete state.cards
-        //     this.props.socket.current.emit("update", this.props.boardId, state.cards)
         }
         this.setState(state)
     }
@@ -96,7 +95,7 @@ class CardContainer extends Component {
                     width: 350,
                     height: 210,
                     title: "Untitled Note",
-                    body: "Enter text body here...",
+                    body: "",
                     editing: true,
                     initial: null
                 }

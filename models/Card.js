@@ -8,7 +8,6 @@ const CardSchema = new Schema({
     },
     body: {
         type: String,
-        required: true
     },
     users: [{
         type: Schema.Types.ObjectId,

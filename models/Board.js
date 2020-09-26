@@ -38,7 +38,7 @@ BoardSchema.statics.fetchBoard = async id => {
                 height: card.height,
                 top: card.top,
                 left: card.left,
-                _id: card.data._id
+                id: card.data._id
             }
             cards.push(newCard)
         }
@@ -63,63 +63,96 @@ BoardSchema.statics.fetchBoard = async id => {
     })
 }
 
-BoardSchema.statics.updateBoard = async (id, boardData) => {
+BoardSchema.statics.updateBoard = async (id, board) => {
+    const boardData = {
+        title: board.title,
+        cards: []
+    }
     const newCards = [];
-    for (let card of boardData.cards) {
-        if (card._id) {
-            Card.findById(card._id).then(dbCard => {
+    const cards = []
+    board.cards.forEach(card => {
+        const cardForDB = {
+            title: card.title,
+            body: card.body,
+            id: card.id
+        }
+        const cardForBoard = {
+            width: card.width,
+            height: card.height,
+            top: card.top,
+            left: card.left,
+            data: card.id
+        }
+        boardData.cards.push(cardForBoard)
+        cards.push(cardForDB)
+    })
+    for (let i = 0; i < cards.length; i++) {
+        const card = cards[i]
+        const boardCard = boardData.cards[i]
+        if (card.id) {
+            Card.findById(card.id).then(dbCard => {
                 dbCard.title = card.title
                 dbCard.body = card.body
                 dbCard.save()
             }).catch(e => {
-                throw new Error(e.message)
+                console.log(e)
             })
         }
         else {
             newCards.push(card)
-            card.newCardIndex = newCards.length
+            boardCard.newCardIndex = newCards.length
         }
     }
-    return await Card.insertMany(newCards).then(async cards => {
-        boardData.cards = boardData.cards.map((card, i) => {
-            card.data = card.newCardIndex ? cards[card.newCardIndex - 1]._id : card._id
-            card.index = i
-            delete card.title
-            delete card.body
-            delete card._id
-            delete card.newCardIndex
-            return card
+    if (newCards.length) {
+        return await Card.insertMany(newCards).then(async cards => {
+            boardData.cards = boardData.cards.map((card, i) => {
+                card.data = card.newCardIndex ? cards[card.newCardIndex - 1]._id : card.data
+                card.index = i
+                delete card.newCardIndex
+                return card
+            })
+            return await Board.findById(id).then(async dbBoard => {
+                dbBoard.title = boardData.title
+                dbBoard.cards = boardData.cards
+                if (boardData.users) {
+                    boardData.users.forEach(user => {
+                        User.findById(user._id).then(user => {
+                            if (dbBoard.users.indexOf(user._id) === -1) {
+                                dbBoard.users.push(user._id)
+                                user.boards.push(dbBoard._id)
+                            }
+                            dbBoard.cards.forEach(card => {
+                                if (user.cards.indexOf(card.data) === -1) {
+                                    user.cards.push(card.data)
+                                    Card.findById(card.data).then(dbCard => {
+                                        if (dbCard.users.indexOf(user._id) === -1) {
+                                            dbCard.users.push(user._id)
+                                            dbCard.save()
+                                        }
+                                    })
+                                }
+                            })
+                            user.save()
+                        })
+                    })
+                }
+                return await dbBoard.save().then(result => result)
+            }).catch(e => {
+                console.log(e)
+            })
+        }).catch(e => {
+            console.log(e)
         })
+    }
+    else {
         return await Board.findById(id).then(async dbBoard => {
             dbBoard.title = boardData.title
             dbBoard.cards = boardData.cards
-            boardData.users.forEach(user => {
-                User.findById(user._id).then(user => {
-                    if (dbBoard.users.indexOf(user._id) === -1) {
-                        dbBoard.users.push(user._id)
-                        user.boards.push(dbBoard._id)
-                    }
-                    dbBoard.cards.forEach(card => {
-                        if (user.cards.indexOf(card.data) === -1) {
-                            user.cards.push(card.data)
-                            Card.findById(card.data).then(dbCard => {
-                                if (dbCard.users.indexOf(user._id) === -1) {
-                                    dbCard.users.push(user._id)
-                                    dbCard.save()
-                                }
-                            })
-                        }
-                    })
-                    user.save()
-                })
-            })
-            return await dbBoard.save().then(result => result)
+            dbBoard.save()
         }).catch(e => {
-            throw new Error(e.message)
+            console.log(e)
         })
-    }).catch(e => {
-        throw new Error(e.message)
-    })
+    }
 }
 
 BoardSchema.statics.newBoard = async (boardData, userId) => {
@@ -153,10 +186,10 @@ BoardSchema.statics.newBoard = async (boardData, userId) => {
             })
             return result
         }).catch(e => {
-            throw new Error(e.message)
+            console.log(e)
         })
     }).catch(e => {
-        throw new Error(e.message)
+        console.log(e)
     })
 }
 

@@ -6,7 +6,6 @@ module.exports = async (req, res, next) => {
         const token = req.header("Authorization").replace("Bearer ", "")
         const decoded = jwt.verify(token, process.env.JWT_KEY)
         db.User.findById(decoded._id).then(user => {
-            console.log(user)
             req.token = token
             req.user = user._id
             next()
