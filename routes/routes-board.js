@@ -17,7 +17,7 @@ module.exports = app => {
         })
     })
 
-    app.post("/api/v1/boards/:boardId", auth, (req, res) => {
+    app.post("/api/v1/boards/update/:boardId", auth, (req, res) => {
         db.Board.fetchBoard(req.params.boardId).then(board => {
             let forbidden = true
             board.users.forEach(user => {
@@ -34,10 +34,12 @@ module.exports = app => {
         }) 
     })
 
-    app.post("/api/v1/boards/new", auth, (req, res) => {
+    app.post("/api/v1/boards/create", auth, (req, res) => {
+        console.log("ah")
         db.Board.newBoard(req.body, req.user).then(results => {
-            res.status(200).send()
+            res.status(200).json(results)
         }).catch(e => {
+            console.log(e)
             res.status(503).end()
         })
     })

@@ -50,6 +50,7 @@ app.use(express.static(__dirname + '/client/build'))
 
 router(app);
 
+
 const server = http.createServer(app)
 const io = require("socket.io")(server)
 io.on("connection", socket => {
@@ -65,6 +66,7 @@ io.on("connection", socket => {
     })
 })
 
+console.log(app._router.stack)
 server.listen(PORT, () => {
     console.log(`🌎 ==> API server now on port ${PORT}!`);
 })

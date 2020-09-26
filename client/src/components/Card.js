@@ -2,6 +2,7 @@ import React from 'react';
 import styled from 'styled-components';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faTimes, faCheckCircle, faTimesCircle } from "@fortawesome/free-solid-svg-icons"
+import LogIn from './LogIn';
 
 const StyledCard = styled.div`
     background-color: ${props => props.theme.white};
@@ -83,7 +84,7 @@ const StyledCard = styled.div`
 function Card(props) {
     const elements = {
         title: props.editing ? <input className="input--title" name="title" value={props.title} onChange={props.cardHandleChange}></input> : <h3 title={props.title}>{props.title}</h3>,
-        body: props.editing ? <textarea className="input--body" name="body" value={props.body} onChange={props.cardHandleChange}></textarea> : props.isLogIn ? props.body : <p>{props.body}</p>
+        body: props.editing ? <textarea className="input--body" name="body" value={props.body} onChange={props.cardHandleChange}></textarea> : props.isLogIn ? <LogIn setToken={props.setToken} cards={props.cards} setUser={props.setUser} /> : <p>{props.body}</p>
     }
     const logInDeleteHandler = () => {
         // Set showLogIn to false

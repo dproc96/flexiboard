@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { Redirect } from 'react-router-dom'
 import styled from 'styled-components';
 import StyledButton from '../styles/StyledButton';
 import axios from 'axios';
@@ -15,6 +16,7 @@ function LogIn(props) {
     const [password, setPassword] = useState("");
     const [passwordMatch, setPasswordMatch] = useState("");
     const [isNew, setIsNew] = useState(true)
+    const [boardId, setBoardId] = useState(false)
     const stateFunctions = {
         email: setEmail,
         name: setName,
@@ -37,20 +39,33 @@ function LogIn(props) {
         if (body.email && body.email.match(/.+@.+\..+/) && body.password) {
             axios.post(window.location.origin + "/api/v1/users/login", body).then(response => {
                 console.log(response)
-                localStorage.setItem("flexiboard-token", response.data.token)
+                localStorage.setItem("flexiboard_user", JSON.stringify(response.data.user))
+                props.setUser(response.data.user)
+                localStorage.setItem("flexiboard_token", response.data.token)
+                props.setToken(response.data.token)
             })
         }
     }
     const handleSignUp = () => {
         const body = {
-            email: email,
-            password: password,
-            name: name
+            user: {
+                email: email,
+                password: password,
+                name: name
+            },
+            board: {
+                title: `${name}'s First Board`,
+                cards: props.cards
+            }
         }
-        if (body.email && body.email.match(/.+@.+\..+/) && body.password && body.password === passwordMatch && body.name) {
+        if (body.user.email && body.user.email.match(/.+@.+\..+/) && body.user.password && body.user.password === passwordMatch && body.user.name) {
             axios.post(window.location.origin + "/api/v1/users/register", body).then(response => {
                 console.log(response)
-                localStorage.setItem("flexiboard-token", response.data.token)
+                localStorage.setItem("flexiboard_user", JSON.stringify(response.data.user))
+                props.setUser(response.data.user)
+                localStorage.setItem("flexiboard_token", response.data.token)
+                props.setToken(response.data.token)
+                setBoardId(response.data.board._id)
             })
         }
     }
@@ -70,6 +85,9 @@ function LogIn(props) {
                 <StyledButton onClick={handleLogIn}>Log In</StyledButton>
                 <StyledButton onClick={handleSwapNew}>Create An Account</StyledButton>
             </React.Fragment>
+            }
+            {
+                boardId && <Redirect to={`/board/${boardId}`} />
             }
         </div>
     );

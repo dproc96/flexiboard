@@ -15,7 +15,7 @@ function Homepage(props) {
         },
     ])
     return (
-        <CardContainer setShowLogin={props.setShowLogin} showLogin={props.showLogin} setCards={setCards} cards={cards} />
+        <CardContainer {...props} setCards={setCards} cards={cards} />
     );
 }
 

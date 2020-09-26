@@ -208,11 +208,13 @@ class CardContainer extends Component {
                 width: 350,
                 height: 300,
                 title: "Login",
-                body: <LogIn />,
                 editing: false,
                 initial: null,
                 isLogIn: true,
-                setShowLogin: this.props.setShowLogin
+                setShowLogin: this.props.setShowLogin,
+                setUser: this.props.setUser,
+                setToken: this.props.setToken,
+                cards: cards
             }])
             this.props.setCards(cards)
         }

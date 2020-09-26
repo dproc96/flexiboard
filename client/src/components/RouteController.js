@@ -4,6 +4,8 @@ import socketIOClient from "socket.io-client";
 import Header from './Header';
 import CardContainer from './CardContainer';
 import Homepage from '../pages/Homepage';
+import User from './User';
+import Board from '../pages/Board';
 
 const ENDPOINT = "/";
 
@@ -18,27 +20,23 @@ function makeid(length) {
 }
 
 function RouteController() {
-    // const newBoardId = "/" + makeid(20)
     let location = useLocation()
     const path = location.pathname
     const [showLogin, setShowLogin] = useState(false)
-    // const hasId = path !== "/"
-    // const boardId = hasId ? path : newBoardId
-    // let socket = useRef(null)
-    // useEffect(() => {
-    //     socket.current = socketIOClient(ENDPOINT);
-    //     socket.current.emit(hasId ? "new connection" : "new board", boardId)
-    // }, [boardId, hasId]);
+    const userStr = localStorage.getItem("flexiboard_user")
+    const [user, setUser] = useState(typeof userStr !== null ? JSON.parse(userStr) : null)
+    const [token, setToken] = useState(localStorage.getItem("flexiboard_token"))
+    console.log(user)
     return (
-        <React.Fragment>
-            <Header setShowLogin={setShowLogin} path={path} />
+        <User user={user}>
+            <Header setUser={setUser} setShowLogin={setShowLogin} path={path} />
             <Route exact path="/">
-                <Homepage setShowLogin={setShowLogin} showLogin={showLogin} />
+                <Homepage setToken={setToken} setUser={setUser} setShowLogin={setShowLogin} showLogin={showLogin} />
             </Route>
             <Route path="/board/">
-                <CardContainer />
+                <Board token={token} path={path} user={user} />
             </Route>
-        </React.Fragment>
+        </User>
     );
 }
 

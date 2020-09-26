@@ -3,11 +3,16 @@ const auth = require("../middleware/auth");
 
 module.exports = app => {
     app.post("/api/v1/users/register", async (req, res) => {
-        const user = new db.User(req.body)
+        const user = new db.User(req.body.user)
         try {
             await user.save()
             const token = await user.generateAuthToken()
-            res.status(201).send({ user, token })
+            db.Board.newBoard(req.body.board, user._id).then(board => {
+                res.status(200).send({user, token, board})
+            }).catch(e => {
+                console.log(e)
+                res.status(503).end()
+            })
         }
         catch (e) {
             res.status(400).send(e)
