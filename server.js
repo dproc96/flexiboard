@@ -46,7 +46,7 @@ const interval = setInterval(() => {
             delete boards[board]
         }
     }
-}, 10)
+}, 100)
 
 server.listen(PORT, () => {
     console.log(`🌎 ==> API server now on port ${PORT}!`);

@@ -13,7 +13,7 @@ class Board extends Component {
             title: ""
         }
     }
-    componentDidMount() {
+    fetchBoard = () => {
         this.boardId = this.props.path.replace('/board/', '')
         const options = {
             headers: {
@@ -35,6 +35,14 @@ class Board extends Component {
                 })
             })
         })
+    }
+    componentDidMount() {
+        this.fetchBoard()
+    }
+    componentDidUpdate(prevProps) {
+        if (prevProps.path !== this.props.path) {
+            this.fetchBoard()
+        }
     }
     setCards = cards => {
         if (this.socket) {

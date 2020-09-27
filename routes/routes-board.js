@@ -35,7 +35,6 @@ module.exports = app => {
     })
 
     app.post("/api/v1/boards/create", auth, (req, res) => {
-        console.log("ah")
         db.Board.newBoard(req.body, req.user).then(results => {
             res.status(200).json(results)
         }).catch(e => {

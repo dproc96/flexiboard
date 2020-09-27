@@ -55,7 +55,15 @@ class CardContainer extends Component {
     }
     handleStateChange = state => {
         if (state.hasOwnProperty("cards")) {
-            this.props.setCards(state.cards)
+            const cards = state.cards.length ? state.cards : [{
+                top: 200,
+                left: 200,
+                width: 350,
+                height: 250,
+                title: "Untitled Note",
+                body: "Why am I here? Because a board must always contain at least one note"
+            }]
+            this.props.setCards(cards)
             delete state.cards
         }
         this.setState(state)
@@ -215,18 +223,6 @@ class CardContainer extends Component {
             this.props.setCards(cards)
         }
     }
-    // componentDidMount() {
-    //     setTimeout(() => {
-    //         if (this.props.socket.current) {
-    //             this.props.socket.current.on("update", cards => {
-    //                 this.setState({ cards: cards })
-    //             })
-    //             this.props.socket.current.on("new user", () => {
-    //                 this.props.socket.current.emit("update", this.props.boardId, this.state.cards)
-    //             })
-    //         }
-    //     }, 10)
-    // }
     render() {
         const containerProps = {
             onDoubleClick: this.handleDoubleClick, 
