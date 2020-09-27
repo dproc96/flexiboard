@@ -9,7 +9,7 @@ const db = require("./models");
 
 const app = express()
 
-mongoose.connect(uri, {useNewUrlParser: true})
+mongoose.connect(uri, {useNewUrlParser: true, useUnifiedTopology:true, useCreateIndex: true})
 mongoose.connection.useDb("flexiboard")
 
 

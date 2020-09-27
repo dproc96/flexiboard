@@ -1,5 +1,6 @@
-import React, { Component, useState } from 'react';
+import React, { useState } from 'react';
 import CardContainer from '../components/CardContainer';
+import { UserContext } from '../components/User';
 
 function Homepage(props) {
     const [cards, setCards] = useState([
@@ -15,7 +16,11 @@ function Homepage(props) {
         },
     ])
     return (
-        <CardContainer {...props} setCards={setCards} cards={cards} />
+        <UserContext.Consumer>
+            {value => (
+                <CardContainer showLogin={value.showLogin} setCards={setCards} cards={cards} />
+            )}
+        </UserContext.Consumer>
     );
 }
 

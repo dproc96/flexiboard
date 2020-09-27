@@ -1,40 +1,39 @@
-import React, { useEffect, useRef, useState } from 'react';
-import { Route, Redirect, useLocation } from 'react-router-dom';
-import socketIOClient from "socket.io-client";
+import React from 'react';
+import { Route, useLocation } from 'react-router-dom';
 import Header from './Header';
-import CardContainer from './CardContainer';
 import Homepage from '../pages/Homepage';
-import User from './User';
+import User, { UserContext } from './User';
 import Board from '../pages/Board';
-
-const ENDPOINT = "/";
-
-function makeid(length) {
-    var result = '';
-    var characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-    var charactersLength = characters.length;
-    for (var i = 0; i < length; i++) {
-        result += characters.charAt(Math.floor(Math.random() * charactersLength));
-    }
-    return result;
-}
+import MyBoards from '../pages/MyBoards';
 
 function RouteController() {
     let location = useLocation()
     const path = location.pathname
-    const [showLogin, setShowLogin] = useState(false)
     const userStr = localStorage.getItem("flexiboard_user")
-    const [user, setUser] = useState(typeof userStr !== null ? JSON.parse(userStr) : null)
-    const [token, setToken] = useState(localStorage.getItem("flexiboard_token"))
-    console.log(user)
+    const initialUser = userStr !== null ? JSON.parse(userStr) : null
     return (
-        <User user={user}>
-            <Header setToken={setToken} setUser={setUser} setShowLogin={setShowLogin} path={path} />
+        <User user={initialUser}>
+            <UserContext.Consumer>
+                {value => (
+                    <Header userContext={value} path={path} />
+                )}
+            </UserContext.Consumer>
             <Route exact path="/">
-                <Homepage setToken={setToken} setUser={setUser} setShowLogin={setShowLogin} showLogin={showLogin} />
+                <Homepage />
             </Route>
             <Route path="/board/">
-                <Board token={token} path={path} user={user} />
+                <UserContext.Consumer>
+                    {value => (
+                        <Board token={value.token} path={path} user={value.user} />
+                    )}
+                </UserContext.Consumer>
+            </Route>
+            <Route exact path="/me/boards">
+                <UserContext.Consumer>
+                    {value => (
+                        <MyBoards userContext={value} />
+                    )}
+                </UserContext.Consumer>
             </Route>
         </User>
     );

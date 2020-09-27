@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import Card from './Card';
 import { MouseContext } from './MouseTracker';
 import styled from 'styled-components';
-import LogIn from './LogIn';
+import { UserContext } from './User';
 
 const StyledContainer = styled.div`
     width: 100vw;
@@ -210,9 +210,6 @@ class CardContainer extends Component {
                 editing: false,
                 initial: null,
                 isLogIn: true,
-                setShowLogin: this.props.setShowLogin,
-                setUser: this.props.setUser,
-                setToken: this.props.setToken,
                 cards: cards
             }])
             this.props.setCards(cards)
@@ -242,6 +239,11 @@ class CardContainer extends Component {
                 {value => (
                     <StyledContainer {...containerProps}>
                         {this.props.cards.map((card, index) => (
+                            card.isLogIn ?
+                            <UserContext.Consumer key={index}>
+                                {user => <Card userContext={user} {...this.getCardProps(index, card, value)} {...card} key={"card-" + index} />}
+                            </UserContext.Consumer>
+                            :
                             <Card {...this.getCardProps(index, card, value)} {...card} key={"card-" + index} />
                         ))}
                     </StyledContainer>

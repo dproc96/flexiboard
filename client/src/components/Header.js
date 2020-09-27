@@ -1,8 +1,7 @@
-import React, { Fragment, useState } from 'react';
+import React, { useState } from 'react';
 import styled from 'styled-components';
 import StyledButton from '../styles/StyledButton';
-import { UserContext } from './User';
-import { useLocation, Redirect } from 'react-router-dom';
+import { Redirect } from 'react-router-dom';
 
 const StyledHeader = styled.header`
     background-color: ${props => props.theme.primary};
@@ -22,30 +21,31 @@ const StyledHeader = styled.header`
 
 function Header(props) {
     const [redirect, setRedirect] = useState(false)
-    const buttonClick = (user) => () => {
+    const logButtonClick = (user) => () => {
         if (user) {
-            props.setUser(null)
-            props.setToken(null)
+            props.userContext.setUser(null)
+            props.userContext.setToken(null)
             localStorage.removeItem("flexiboard_user")
             localStorage.removeItem("flexiboard_token")
-            setRedirect(true)
+            setRedirect("/me/boards")
+            setTimeout(() => { setRedirect(false) }, 0)
         }
         else {
-            props.setShowLogin(true)
+            props.userContext.setShowLogin(true)
         }
+    }
+    const myBoardsClick = () => {
+        setRedirect("/me/boards")
+        setTimeout(() => {setRedirect(false)}, 0)
     }
     return (
         <StyledHeader>
             <img width="150px" src="/assets/images/flexiboard-header-logo.png" alt="flexiboard" />
-            <UserContext.Consumer>
-                {value => (
-                    <Fragment>
-                        {value && <p style={{color: "white"}}>Hello {value.name}</p>}
-                        <StyledButton onClick={buttonClick(value)}>Log {value ? "Out" : "In"}</StyledButton>
-                    </Fragment>
-                )}
-            </UserContext.Consumer>
-            {redirect && <Redirect to={"/"} />}
+            <div>
+                {props.userContext.user && props.path !== "/me/boards" && <StyledButton style={{margin: "0px 10px"}} onClick={myBoardsClick}>My Boards</StyledButton>}
+                <StyledButton onClick={logButtonClick(props.userContext.user)}>Log {props.userContext.user ? "Out" : "In"}</StyledButton>
+            </div>
+            {redirect && <Redirect to={redirect} />}
         </StyledHeader>
     );
 }
