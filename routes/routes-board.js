@@ -19,16 +19,8 @@ module.exports = app => {
 
     app.post("/api/v1/boards/update/:boardId", auth, (req, res) => {
         db.Board.fetchBoard(req.params.boardId).then(board => {
-            let forbidden = true
-            board.users.forEach(user => {
-                if (user._id === mongoose.Types.ObjectId(req.user)) { forbidden: false }
-            })
-            if (forbidden) { res.status(403).send({ error: "Access forbidden" }) }
-            db.Board.updateBoard(req.params.boardId, req.body).then(results => {
-                res.status(200).send()
-            }).catch(e => {
-                res.status(503).end()
-            })
+            sendForbiddenResponseIfUserNotPermitted(board, req, res)
+            updateBoard(req, res)
         }).catch(e => {
             res.status(404).send({ error: "Board not found" })
         }) 
@@ -42,4 +34,24 @@ module.exports = app => {
             res.status(503).end()
         })
     })
+}
+
+function sendForbiddenResponseIfUserNotPermitted(board, req, res) {
+    let hasPermission = verifyUserPermissions(board, req)
+    if (!hasPermission) { res.status(403).send({ error: "Access forbidden" })} 
+}
+
+function updateBoard(req, res) {
+    db.Board.updateBoard(req.params.boardId, req.body).then(results => {
+        res.status(200).send()
+    }).catch(e => {
+        res.status(503).end()
+    })
+}
+
+function verifyUserPermissions(board, req) {
+    board.users.forEach(user => {
+        if (user._id === mongoose.Types.ObjectId(req.user)) { return true } 
+    })
+    return false
 }

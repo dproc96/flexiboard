@@ -267,7 +267,7 @@ class CardContainer extends Component {
 
     resizeWest = (card, deltaWidth) => {
         card.width -= deltaWidth;
-        if (card.width >= 100) {
+        if (card.width > 50) {
             card.left += (deltaWidth);
         }
     }
@@ -282,7 +282,7 @@ class CardContainer extends Component {
 
     resizeNorth = (card, deltaHeight) => {
         card.height -= deltaHeight;
-        if (card.height >= 100) {
+        if (card.height > 50) {
             card.top += (deltaHeight);
         }
     }

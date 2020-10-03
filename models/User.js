@@ -43,9 +43,7 @@ UserSchema.methods.generateAuthToken = async function() {
 
 UserSchema.statics.findByCredentials = async (email, password) => {
     return await User.findOne({email: email}).then(user => {
-        const isMatch = bcrypt.compareSync(password, user.password)
-        if (!isMatch) { throw new Error("Password not correct")}
-        return user
+        return returnUserIfPasswordCorrect(password, user);
     }).catch(e => {
         throw new Error("User not found")
     })
@@ -62,3 +60,9 @@ UserSchema.pre("save", function(next) {
 const User = mongoose.model("User", UserSchema)
 
 module.exports = User;
+
+function returnUserIfPasswordCorrect(password, user) {
+    const isMatch = bcrypt.compareSync(password, user.password);
+    if (!isMatch) { throw new Error("Password not correct"); }
+    return user;
+}

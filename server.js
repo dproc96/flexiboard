@@ -26,7 +26,6 @@ const io = require("socket.io")(server)
 const boards = {}
 io.on("connection", socket => {
     socket.on("new connection", board => {
-        console.log("Board: " + board)
         socket.join(board)
         socket.to(board).emit("new user")
     })
@@ -38,8 +37,9 @@ io.on("connection", socket => {
 
 const interval = setInterval(() => {
     for (let board in boards) {
-        var room = io.sockets.adapter.rooms[board]
-        if (room && room.length > 0) {
+        let room = io.sockets.adapter.rooms[board]
+        let roomHasActiveMembers = room && room.length > 0
+        if (roomHasActiveMembers) {
             db.Board.updateBoard(board, boards[board])
         }
         else {
