@@ -36,15 +36,25 @@ function LogIn(props) {
             email: email,
             password: password
         }
+        attemptLogin(body)
+    }
+    const attemptLogin = body => {
         if (body.email && body.email.match(/.+@.+\..+/) && body.password) {
-            axios.post(window.location.origin + "/api/v1/users/login", body).then(response => {
-                console.log(response)
-                localStorage.setItem("flexiboard_user", JSON.stringify(response.data.user))
-                props.setUser(response.data.user)
-                localStorage.setItem("flexiboard_token", response.data.token)
-                props.setToken(response.data.token)
-            })
+            requestLogInAndEstablishUser(body)
         }
+    }
+    const requestLogInAndEstablishUser = body => {
+        axios.post(window.location.origin + "/api/v1/users/login", body).then(response => {
+            establishUser(response.data)
+        })
+    }
+    const establishUser = data => {
+        setGlobalParameter("flexiboard_user", data.user, props.setUser)
+        setGlobalParameter("flexiboard_token", data.token, props.setToken)
+    }
+    const setGlobalParameter = (parameter, value, setValue) => {
+        localStorage.setItem(parameter, JSON.stringify(value))
+        setValue(value)
     }
     const handleSignUp = () => {
         const body = {
@@ -58,23 +68,36 @@ function LogIn(props) {
                 cards: props.cards
             }
         }
+        attemptSignUp(body)
+    }
+    const attemptSignUp = body => {
         if (body.user.email && body.user.email.match(/.+@.+\..+/) && body.user.password && body.user.password === passwordMatch && body.user.name) {
-            axios.post(window.location.origin + "/api/v1/users/register", body).then(response => {
-                console.log(response)
-                localStorage.setItem("flexiboard_user", JSON.stringify(response.data.user))
-                props.setUser(response.data.user)
-                localStorage.setItem("flexiboard_token", response.data.token)
-                props.setToken(response.data.token)
-                setBoardId(response.data.board._id)
-            })
+            requestSignUpAndEstablishUserAndBoard(body);
+        }
+    }
+    const requestSignUpAndEstablishUserAndBoard = body => {
+        axios.post(window.location.origin + "/api/v1/users/register", body).then(response => {
+            establishUser(response.data);
+            establishBoard(response.data)
+        });
+    }
+    const establishBoard = data => {
+        setBoardId(data.board._id);
+    }
+    const getInputProps = (value, inputName, placedholder) => {
+        return {
+            onChange: handleChange,
+            name: inputName,
+            value: value,
+            placeholder: placedholder
         }
     }
     return (
         <div>
-            <StyledInput onChange={handleChange} name="email" value={email} placeholder="Your Email..." />
-            {isNew && <StyledInput onChange={handleChange} name="name" value={name} placeholder="Your Name..." />}
-            <StyledInput type="password" onChange={handleChange} name="password" value={password} placeholder="Your Password..." />
-            {isNew && <StyledInput type="password" onChange={handleChange} name="passwordMatch" value={passwordMatch} placeholder="Reenter Password..." />}
+            <StyledInput {...getInputProps(email, "email", "Your Email...")} />
+            {isNew && <StyledInput {...getInputProps(name, "name", "Your Name...")} />}
+            <StyledInput {...getInputProps(password, "password", "Your Password...")} type="password" />
+            {isNew && <StyledInput {...getInputProps(passwordMatch, "passwordMatch", "Reenter Password...")} type="password" />}
             {isNew ?
             <React.Fragment>
                 <StyledButton onClick={handleSignUp}>Sign Up & Create Board</StyledButton>

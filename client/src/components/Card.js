@@ -88,7 +88,6 @@ function Card(props) {
         body: props.editing ? <textarea placeholder="Enter text body..." className="input--body" name="body" value={props.body} onChange={props.cardHandleChange}></textarea> : props.isLogIn ? logIn : <p>{props.body}</p>
     }
     const logInDeleteHandler = () => {
-        // Set showLogIn to false
         if (props.isLogIn) {
             props.userContext.setShowLogin(false)
         }

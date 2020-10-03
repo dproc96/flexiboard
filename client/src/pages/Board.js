@@ -6,58 +6,69 @@ import CardContainer from '../components/CardContainer';
 const ENDPOINT = window.location.origin + "/";
 
 class Board extends Component {
-    constructor(props) {
-        super(props)
-        this.state = {
-            cards: [],
-            title: ""
-        }
+    fetchBoardAndShowToUser = () => {
+        this.getBoardId();
+        this.fetchBoard();
     }
+
+    getBoardId = () => {
+        this.boardId = this.props.path.replace('/board/', '');
+    }
+
     fetchBoard = () => {
-        this.boardId = this.props.path.replace('/board/', '')
         const options = {
             headers: {
                 Authorization: `Bearer ${this.props.token}`
             }
+        };
+        axios.get(`/api/v1/boards/${this.boardId}`, options).then(this.handleBoardResponse);
+    }
+
+    handleBoardResponse = response => {
+        this.setBoard(response.data);
+        this.notifySocketOfConnection();
+    }
+
+    setCards = cards => {
+        const data = {
+            title: this.props.userContext.board.title,
+            cards: cards
+        };
+        this.notifySocketOfUpdate(data);
+        this.setBoard(data)
+    }
+
+    setBoard = board => {
+        this.props.userContext.setBoard(board)
+    }
+
+    notifySocketOfConnection = () => {
+        this.socket = socketIOClient(ENDPOINT);
+        this.socket.emit("new connection", this.boardId);
+        this.socket.on("update", data => {
+            this.setBoard(data);
+        });
+    }
+
+    notifySocketOfUpdate = data => {
+        if (this.socket) {
+            this.socket.emit("update", this.boardId, data);
         }
-        axios.get(`/api/v1/boards/${this.boardId}`, options).then(response => {
-            console.log(response.data)
-            this.setState({
-                title: response.data.title,
-                cards: response.data.cards
-            })
-            this.socket = socketIOClient(ENDPOINT)
-            this.socket.emit("new connection", this.boardId)
-            this.socket.on("update", data => {
-                this.setState({
-                    title: data.title,
-                    cards: data.cards
-                })
-            })
-        })
     }
+
     componentDidMount() {
-        this.fetchBoard()
+        this.fetchBoardAndShowToUser()
     }
+
     componentDidUpdate(prevProps) {
         if (prevProps.path !== this.props.path) {
-            this.fetchBoard()
+            this.fetchBoardAndShowToUser()
         }
     }
-    setCards = cards => {
-        if (this.socket) {
-            const data = {
-                title: this.state.title,
-                cards: cards
-            }
-            console.log(data)
-            this.socket.emit("update", this.boardId, data)
-            this.setState({cards: cards})
-        }
-    }
+
     render() {
         return (
-            <CardContainer setCards={this.setCards} cards={this.state.cards} />
+            <CardContainer setCards={this.setCards} cards={this.props.userContext.board.cards} />
         );
     }
 }

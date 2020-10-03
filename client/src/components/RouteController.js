@@ -24,7 +24,7 @@ function RouteController() {
             <Route path="/board/">
                 <UserContext.Consumer>
                     {value => (
-                        <Board token={value.token} path={path} user={value.user} />
+                        <Board userContext={value} token={value.token} path={path} user={value.user} />
                     )}
                 </UserContext.Consumer>
             </Route>

@@ -23,7 +23,7 @@ const BoardSchema = new Schema({
         type: Schema.Types.ObjectId,
         ref: "User"
     }]
-})
+}, {timestamps: true})
 
 BoardSchema.statics.fetchBoard = async id => {
     return await Board.findById(id).populate("cards.data").populate("users").then(board => {
@@ -51,11 +51,14 @@ BoardSchema.statics.fetchBoard = async id => {
             }
             users.push(newUser)
         }
+        console.log(board)
         const output = {
             title: board.title,
             _id: board._id,
             cards: cards,
-            users: users
+            users: users,
+            createdAt: board.createdAt,
+            updatedAt: board.updatedAt
         }
         return output
     }).catch(e => {

@@ -7,7 +7,10 @@ function User(props) {
     const [user, setUser] = useState(userStr !== null ? JSON.parse(userStr) : null)
     const [token, setToken] = useState(localStorage.getItem("flexiboard_token"))
     const [showLogin, setShowLogin] = useState(false)
-    const [board, setBoard] = useState([])
+    const [board, setBoard] = useState({
+        title: "",
+        cards: []
+    })
     const value = {
         user,
         setUser,
