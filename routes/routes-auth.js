@@ -7,12 +7,7 @@ module.exports = app => {
         try {
             await user.save()
             const token = await user.generateAuthToken()
-            db.Board.newBoard(req.body.board, user._id).then(board => {
-                res.status(200).send({user, token, board})
-            }).catch(e => {
-                console.log(e)
-                res.status(503).end()
-            })
+            createFirstUserBoard(req, user, res, token);
         }
         catch (e) {
             res.status(400).send(e)
@@ -61,4 +56,13 @@ module.exports = app => {
             })
         }
     })
+}
+
+function createFirstUserBoard(req, user, res, token) {
+    db.Board.newBoard(req.body.board, user._id).then(board => {
+        res.status(200).send({ user, token, board });
+    }).catch(e => {
+        console.log(e);
+        res.status(503).end();
+    });
 }
